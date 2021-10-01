@@ -1,9 +1,22 @@
 require('dotenv').config();
 const application = require('./application');
+const database = require('./database');
 
 const serverPort = process.env.SERVER_PORT || 3333;
 
-application.listen(
-    serverPort,
-    () => console.log(`Server running on *:${serverPort}`)
-);
+process.on('uncaughtException', async (err) => {
+    console.log(err.message);
+    await database.disconnect();
+    process.exit(1);
+})
+
+async function main() {
+    await database.connect();
+    await database.serializeModels();
+    application.listen(
+        serverPort,
+        () => console.log(`Server running on *:${serverPort}`)
+    );
+}
+
+main();

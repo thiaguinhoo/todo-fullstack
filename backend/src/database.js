@@ -1,11 +1,9 @@
-const path = require('path');
 const sqlite = require('sqlite3');
 
+const { Database: DatabaseConfig } = require('./config');
+
 const connect = async () => {
-    const databaseFilename = path.resolve(
-        __dirname, '../data.sqlite'
-    );
-    global.database = new sqlite.Database(databaseFilename, (err) => {
+    global.database = new sqlite.Database(DatabaseConfig.filename, (err) => {
         if (err) return console.log(err.message);
         console.log('Connected in database with successfully');
     });

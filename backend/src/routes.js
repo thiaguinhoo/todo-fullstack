@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { body, validationResult } = require('express-validator');
 const cache = require('./utils/cache');
 
 const router = Router();
@@ -17,6 +18,21 @@ router.route('/')
         } else {
             response.json(cached);
         }        
+    })
+    .post(body('title').isLength({ min: 3 }), async (request, response) => {
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) {
+            return response
+                .status(400)
+                .json({ errors: errors.array() });
+        }
+        const { title } = request.body;
+        database.run('INSERT INTO todos (title) VALUES (?)', [title], function (err) {
+            if (err) throw err;
+            response
+                .status(201)
+                .json({ id: this.lastID, title })
+        } )
     })
 
 module.exports = router;

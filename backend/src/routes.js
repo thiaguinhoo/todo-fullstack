@@ -52,5 +52,12 @@ router.route('/:id')
             response.json(cached);
         }
     })
+    .delete(async (request, response) => {
+        const { id } = request.params;
+        database.run('DELETE FROM todos WHERE id = ?', id, function (err) {
+            if (err) throw err;
+            response.json({ id });
+        })
+    })
 
 module.exports = router;

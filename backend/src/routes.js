@@ -59,5 +59,13 @@ router.route('/:id')
             response.json({ id });
         })
     })
+    .patch(body('title').isLength({ min: 3 }), async (request, response) => {
+        const { id } = request.params;
+        const { title } = request.body;
+        database.run('UPDATE todos SET title = ? WHERE id = ?', [title, id], function (err) {
+            if (err) throw err;
+            response.json({ id });
+        })
+    })
 
 module.exports = router;

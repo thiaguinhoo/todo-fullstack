@@ -35,4 +35,22 @@ router.route('/')
         } )
     })
 
+router.route('/:id')
+    .get(async (request, response) => {
+        const accessKey = '__express__' + request.url || request.originalUrl;
+        const cached = cache.get(accessKey);
+        if (cached == undefined) {
+            const { id } = request.params;
+            database.get('SELECT * FROM todos WHERE id = ?', [id], (err, row) => {
+                if (err) throw err;
+                if (row) {
+                    cache.set(accessKey, row);
+                    response.json({ ...row });
+                }
+            })
+        } else {
+            response.json(cached);
+        }
+    })
+
 module.exports = router;
